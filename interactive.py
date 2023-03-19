@@ -2,13 +2,15 @@ import streamlit as st
 
 import pandas as pd
 import altair as alt
-from vega_datasets import data
-
 
 st.set_page_config(layout="wide")
 
-state_map = data.us_10m.url
+state_map = 'https://cdn.jsdelivr.net/npm/vega-datasets@v1.29.0/data/us-10m.json'
 disability = pd.read_csv('dataset/disability.csv')
+
+state_selector=alt.selection_single(on='mouseover', clear='mouseout', fields=['state'])
+opacityCondition=alt.condition(state_selector, alt.value(1), alt.value(0.2))
+strokeCondition=alt.condition(state_selector, alt.value('black'), alt.value('white'))
 
 state_selector=alt.selection_single(on='mouseover', clear='mouseout', fields=['state'])
 opacityCondition=alt.condition(state_selector, alt.value(1), alt.value(0.2))
@@ -30,11 +32,11 @@ us_map = alt.Chart(alt.topo_feature(state_map, 'states')).mark_geoshape(
         alt.Tooltip('Vision Disability:Q', title='Vision Disability (%)', format='.1f'),
         alt.Tooltip('Self-care Disability:Q', title='Self-care Disability (%)', format='.1f'),
         alt.Tooltip('Independent Living Disability:Q', title='Independent Living Disability (%)', format='.1f'),
-        alt.Tooltip('18-44:Q', title='Age 18-44 (%)', format='.1f'),
-        alt.Tooltip('45-64:Q', title='Age 45-64 (%)', format='.1f'),
-        alt.Tooltip('65+:Q', title='Age 65+ (%)', format='.1f'),
-        alt.Tooltip('Male:Q', title='Male (%)', format='.1f'),
-        alt.Tooltip('Female:Q', title='Female (%)', format='.1f')
+#         alt.Tooltip('18-44:Q', title='Age 18-44 (%)', format='.1f'),
+#         alt.Tooltip('45-64:Q', title='Age 45-64 (%)', format='.1f'),
+#         alt.Tooltip('65+:Q', title='Age 65+ (%)', format='.1f'),
+#         alt.Tooltip('Male:Q', title='Male (%)', format='.1f'),
+#         alt.Tooltip('Female:Q', title='Female (%)', format='.1f')
     ],
     opacity=opacityCondition,
     stroke=strokeCondition
@@ -64,7 +66,7 @@ us_map = alt.Chart(alt.topo_feature(state_map, 'states')).mark_geoshape(
     'albersUsa'
 ).properties(
     title='2020 Disability Status and Types among Adults 18 Years of Age or Older',
-    width=900
+    width=800
 ).add_selection(
     state_selector
 )
